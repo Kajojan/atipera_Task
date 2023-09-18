@@ -68,7 +68,35 @@ public class githubServices {
     }
 
 
+    public List<Repository_Branch> getUserRepositoriesWithBranches(String username) {
+        Repository[] repositories = getUserRepositories(username);
 
+        List<Repository_Branch> branchesList = new ArrayList<>();
+
+        if (repositories == null) {
+            return null;
+        }
+        List<Repository> nonForkRepositories = Arrays.stream(repositories)
+                .filter(repo -> !repo.isFork())
+                .toList();
+
+            for (Repository repo : nonForkRepositories) {
+                Repository_Branch repoBranch = new Repository_Branch();
+                String branchesUrl = repo.getBranches_url().replace("{/branch}", "");
+                List<Branch> branches = getBranchesFromGitHub(branchesUrl);
+
+                for (Branch branch : branches) {
+                    repoBranch.addBranches(branch);
+                }
+                repoBranch.setName(repo.getName());
+                repoBranch.setOwner(repo.getOwner());
+
+                branchesList.add(repoBranch);
+            }
+
+
+        return branchesList;
+    }
 
 
 
