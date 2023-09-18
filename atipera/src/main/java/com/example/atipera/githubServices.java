@@ -43,6 +43,35 @@ public class githubServices {
             }
 
         }
+    public List<Branch> getBranchesFromGitHub(String branchesUrl) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Branch[]> responseEntity = restTemplate.exchange(
+                    branchesUrl,
+                    HttpMethod.GET,
+                    entity,
+                    Branch[].class
+            );
+
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                return Arrays.asList(responseEntity.getBody());
+            } else {
+                throw new RuntimeException("Error fetching branches: " + responseEntity.getStatusCode());
+            }
+        } catch (HttpClientErrorException.NotFound notFoundException) {
+            return Collections.emptyList();
+        }
+    }
+
+
+
+
+
+
 
 
 
